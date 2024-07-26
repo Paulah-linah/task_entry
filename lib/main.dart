@@ -1,7 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // Import to format dates
 
 void main() {
   runApp(TaskEntryApp());
+}
+
+// Enum to define task priority
+enum Priority { High, Medium, Low }
+
+// Base class for Task with required properties
+class Task {
+  final String title;
+  final String description;
+  final DateTime dueDate;
+  final Priority priority;
+  bool isCompleted;
+
+  Task({
+    required this.title,
+    required this.description,
+    required this.dueDate,
+    required this.priority,
+    this.isCompleted = false,
+  });
+}
+
+// Subclass of Task for future time-related functionalities
+class TimedTask extends Task {
+  TimedTask({
+    required String title,
+    required String description,
+    required DateTime dueDate,
+    required Priority priority,
+  }) : super(
+          title: title,
+          description: description,
+          dueDate: dueDate,
+          priority: priority,
+        );
+}
+
+// Mixin to log task completion
+mixin TaskNotifier {
+  void logCompletion(Task task) {
+    print("Task '${task.title}' is completed.");
+  }
 }
 
 // Main entry point of the app
@@ -26,18 +69,83 @@ class TaskHomePage extends StatefulWidget {
   _TaskHomePageState createState() => _TaskHomePageState();
 }
 
-class _TaskHomePageState extends State<TaskHomePage> {
-  final List<String> _tasks = []; // List to store tasks
-  final TextEditingController _controller =
-      TextEditingController(); // Controller for the TextField
+class _TaskHomePageState extends State<TaskHomePage> with TaskNotifier {
+  final List<Task> _tasks = []; // List to store tasks
+  final TextEditingController _titleController =
+      TextEditingController(); // Controller for title input
+  final TextEditingController _descController =
+      TextEditingController(); // Controller for description input
+  Priority _selectedPriority = Priority.Medium; // Default priority
+  DateTime? _selectedDate; // Selected due date
 
   // Function to add a task to the list
   void _addTask() {
-    if (_controller.text.isNotEmpty) {
+    if (_titleController.text.isNotEmpty &&
+        _descController.text.isNotEmpty &&
+        _selectedDate != null) {
       setState(() {
-        _tasks.add(_controller.text);
-        _controller.clear();
+        _tasks.add(Task(
+          title: _titleController.text,
+          description: _descController.text,
+          dueDate: _selectedDate!,
+          priority: _selectedPriority,
+        ));
+        _titleController.clear();
+        _descController.clear();
+        _selectedDate = null;
+        _selectedPriority = Priority.Medium;
       });
+    }
+  }
+
+  // Function to handle task completion
+  void _toggleTaskCompletion(Task task) {
+    setState(() {
+      task.isCompleted = !task.isCompleted;
+      if (task.isCompleted) {
+        logCompletion(task);
+      }
+    });
+  }
+
+  // Function to delete a task
+  void _deleteTask(int index) {
+    setState(() {
+      _tasks.removeAt(index);
+    });
+  }
+
+  // Function to select a due date
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
+  }
+
+  // Function to compare task priority
+  int _comparePriority(Task a, Task b) {
+    return a.priority.index.compareTo(b.priority.index);
+  }
+
+  // Function to get priority color
+  Color _getPriorityColor(Priority priority) {
+    switch (priority) {
+      case Priority.High:
+        return Colors.red;
+      case Priority.Medium:
+        return Colors.orange;
+      case Priority.Low:
+        return Colors.green;
+      default:
+        return Colors.grey;
     }
   }
 
@@ -52,13 +160,60 @@ class _TaskHomePageState extends State<TaskHomePage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
-            // TextField for task input
+            // TextField for task title input
             TextField(
-              controller: _controller,
+              controller: _titleController,
               decoration: InputDecoration(
-                labelText: 'Enter task',
+                labelText: 'Task Title',
                 border: OutlineInputBorder(),
               ),
+            ),
+            SizedBox(height: 10),
+            // TextField for task description input
+            TextField(
+              controller: _descController,
+              decoration: InputDecoration(
+                labelText: 'Task Description',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 10),
+            // Date picker for due date
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => _selectDate(context),
+                    child: Text(_selectedDate == null
+                        ? 'Select Due Date'
+                        : 'Due Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate!)}'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromARGB(
+                          255, 222, 23, 159), // Pink background color
+                      foregroundColor: Colors.white, // Text color
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            // Dropdown for task priority
+            DropdownButton<Priority>(
+              value: _selectedPriority,
+              onChanged: (Priority? newValue) {
+                setState(() {
+                  _selectedPriority = newValue!;
+                });
+              },
+              items: Priority.values
+                  .map<DropdownMenuItem<Priority>>((Priority value) {
+                return DropdownMenuItem<Priority>(
+                  value: value,
+                  child: Text(value.toString().split('.').last),
+                );
+              }).toList(),
             ),
             SizedBox(height: 10),
             // ElevatedButton to add the task
@@ -67,7 +222,7 @@ class _TaskHomePageState extends State<TaskHomePage> {
               child: Text('Add Task'),
               style: ElevatedButton.styleFrom(
                 backgroundColor:
-                    Color.fromARGB(255, 222, 23, 159), // Background color
+                    Color.fromARGB(255, 222, 23, 159), // Pink background color
                 foregroundColor: Colors.white, // Text color
                 padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
               ),
@@ -80,18 +235,44 @@ class _TaskHomePageState extends State<TaskHomePage> {
                   : ListView.builder(
                       itemCount: _tasks.length,
                       itemBuilder: (context, index) {
+                        final task = _tasks[index];
                         return Card(
                           elevation: 3,
                           margin: EdgeInsets.symmetric(vertical: 5),
                           child: ListTile(
-                            title: Text(_tasks[index]),
-                            trailing: IconButton(
-                              icon: Icon(Icons.delete, color: Colors.red),
-                              onPressed: () {
-                                setState(() {
-                                  _tasks.removeAt(index);
-                                });
-                              },
+                            title: Text(task.title),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(task.description),
+                                Text(
+                                    'Due: ${DateFormat('yyyy-MM-dd').format(task.dueDate)}'),
+                                Text(
+                                  'Priority: ${task.priority.toString().split('.').last}',
+                                  style: TextStyle(
+                                      color: _getPriorityColor(task.priority)),
+                                ),
+                              ],
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    task.isCompleted
+                                        ? Icons.check_box
+                                        : Icons.check_box_outline_blank,
+                                    color: task.isCompleted
+                                        ? Colors.green
+                                        : Colors.red,
+                                  ),
+                                  onPressed: () => _toggleTaskCompletion(task),
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.delete, color: Colors.red),
+                                  onPressed: () => _deleteTask(index),
+                                ),
+                              ],
                             ),
                           ),
                         );
