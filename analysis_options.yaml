@@ -1,5 +1,11 @@
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  errors:
+    # Treat these hints as warnings
+    todo: warning
+    dead_code: warning
+
 linter:
   rules:
     avoid_print: false
@@ -9,3 +15,27 @@ linter:
     prefer_final_fields: false
     unnecessary_breaks: true
     use_key_in_widget_constructors: false
+    # Additional rules for better code practices
+    avoid_empty_else: true
+    avoid_function_literals_in_foreach_calls: true
+    avoid_redundant_argument_values: true
+    avoid_renaming_method_parameters: true
+    avoid_returning_null_for_future: true
+    avoid_single_cascade_in_expression_statements: true
+    avoid_types_as_parameter_names: true
+    avoid_void_async: true
+    cancel_subscriptions: true
+    hash_and_equals: true
+    join_return_with_assignment: true
+    list_remove_unrelated_type: true
+    noop_primitive_operations: true
+    null_closures: true
+    prefer_is_empty: true
+    prefer_is_not_empty: true
+    require_trailing_commas: true
+    type_annotate_public_apis: true
+    unnecessary_null_aware_assignments: true
+    unnecessary_null_in_if_null_operators: true
+    unnecessary_string_escapes: true
+    use_full_hex_values_for_flutter_colors: true
+    use_rethrow_when_possible: true

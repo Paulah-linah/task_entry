@@ -6,10 +6,10 @@ import 'task_notifier.dart';
 // Stateful widget to manage the state of the task list
 class TaskHomePage extends StatefulWidget {
   @override
-  _TaskHomePageState createState() => _TaskHomePageState();
+  TaskHomePageState createState() => TaskHomePageState();
 }
 
-class _TaskHomePageState extends State<TaskHomePage> with TaskNotifier {
+class TaskHomePageState extends State<TaskHomePage> with TaskNotifier {
   final List<Task> _tasks = []; // List to store tasks
   final TextEditingController _titleController =
       TextEditingController(); // Controller for title input
@@ -118,12 +118,12 @@ class _TaskHomePageState extends State<TaskHomePage> with TaskNotifier {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Task Entry App'),
+        title: const Text('Task Entry App'),
         centerTitle: true,
         actions: _isSelectionMode
             ? [
                 IconButton(
-                  icon: Icon(Icons.close),
+                  icon: const Icon(Icons.close),
                   onPressed: () {
                     setState(() {
                       _isSelectionMode = false;
@@ -143,21 +143,21 @@ class _TaskHomePageState extends State<TaskHomePage> with TaskNotifier {
               children: [
                 TextField(
                   controller: _titleController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Task Title',
                     border: OutlineInputBorder(),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 // TextField for task description input
                 TextField(
                   controller: _descController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Task Description',
                     border: OutlineInputBorder(),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 // Date picker for due date
                 Row(
                   children: [
@@ -166,19 +166,19 @@ class _TaskHomePageState extends State<TaskHomePage> with TaskNotifier {
                         onPressed: () => _selectDate(context),
                         child: Text(_selectedDate == null
                             ? 'Select Due Date'
-                            : 'Due Date: ${DateFormat('yyyy-MM-dd').format(_selectedDate!)}'),
+                            : 'Due Date: ${DateFormat('dd-MM-yyyy').format(_selectedDate!)}'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromARGB(
+                          backgroundColor: const Color.fromARGB(
                               255, 222, 23, 159), // Pink background color
                           foregroundColor: Colors.white, // Text color
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 50, vertical: 15),
                         ),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 // Dropdown for task priority
                 DropdownButton<Priority>(
                   value: _selectedPriority,
@@ -195,26 +195,27 @@ class _TaskHomePageState extends State<TaskHomePage> with TaskNotifier {
                     );
                   }).toList(),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 // ElevatedButton to add the task
                 ElevatedButton(
                   onPressed: _addTask,
-                  child: Text('Add Task'),
+                  child: const Text('Add Task'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(
+                    backgroundColor: const Color.fromARGB(
                         255, 222, 23, 159), // Pink background color
                     foregroundColor: Colors.white, // Text color
-                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 50, vertical: 15),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
               ],
             ),
           ),
           // Expanded ListView to display tasks
           Expanded(
             child: _tasks.isEmpty
-                ? Center(child: Text('No tasks added yet.'))
+                ? const Center(child: Text('No tasks added yet.'))
                 : ListView.builder(
                     itemCount: _tasks.length,
                     itemBuilder: (context, index) {
@@ -231,7 +232,7 @@ class _TaskHomePageState extends State<TaskHomePage> with TaskNotifier {
                         },
                         child: Card(
                           elevation: 3,
-                          margin: EdgeInsets.symmetric(vertical: 5),
+                          margin: const EdgeInsets.symmetric(vertical: 5),
                           color: isSelected
                               ? Colors.blue.withOpacity(0.2)
                               : Colors.white,
@@ -242,7 +243,7 @@ class _TaskHomePageState extends State<TaskHomePage> with TaskNotifier {
                               children: [
                                 Text(task.description),
                                 Text(
-                                    'Due: ${DateFormat('yyyy-MM-dd').format(task.dueDate)}'),
+                                    'Due: ${DateFormat('dd-MM-yyyy').format(task.dueDate)}'),
                                 Text(
                                   'Priority: ${task.priority.toString().split('.').last}',
                                   style: TextStyle(
@@ -262,11 +263,11 @@ class _TaskHomePageState extends State<TaskHomePage> with TaskNotifier {
                                         ? Colors.green
                                         : Colors.red,
                                   ),
-                                  onPressed: () =>
-                                      _toggleTaskCompletion(task),
+                                  onPressed: () => _toggleTaskCompletion(task),
                                 ),
                                 IconButton(
-                                  icon: Icon(Icons.delete, color: Colors.red),
+                                  icon: const Icon(Icons.delete,
+                                      color: Colors.red),
                                   onPressed: () => _deleteTask(index),
                                 ),
                               ],
@@ -283,11 +284,12 @@ class _TaskHomePageState extends State<TaskHomePage> with TaskNotifier {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: _deleteSelectedTasks,
-                child: Text('Delete Selected Tasks'),
+                child: const Text('Delete Selected Tasks'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red, // Red background color
                   foregroundColor: Colors.white, // Text color
-                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                 ),
               ),
             ),
