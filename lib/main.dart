@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'task_home_page.dart';
+import 'task_manager.dart'; // Import the TaskManager class
 
 void main() {
   runApp(TaskEntryApp());
 }
 
-// Main entry point of the app
 class TaskEntryApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,9 @@ class TaskEntryApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: TaskHomePage(),
+      home: TaskHomePage(
+        taskManager: TaskManager(), // Pass TaskManager to TaskHomePage
+      ),
     );
   }
 }
