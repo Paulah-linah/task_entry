@@ -1,24 +1,16 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:task_entry_app/main.dart';
+import 'package:task_entry_app/src/app/app.dart';
 
 void main() {
-  testWidgets('Task adding test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(TaskEntryApp());
+  testWidgets('App shows splash then dashboard', (WidgetTester tester) async {
+    await tester.pumpWidget(const ProviderScope(child: TaskEntryAppShell()));
 
-    // Verify that our app has a TextField and an ElevatedButton.
-    expect(find.byType(TextField), findsOneWidget);
-    expect(find.byType(ElevatedButton), findsOneWidget);
+    expect(find.text('TaskEntry'), findsOneWidget);
 
-    // Enter a task in the TextField.
-    await tester.enterText(find.byType(TextField), 'New Task');
-    
-    // Tap the ElevatedButton to add the task.
-    await tester.tap(find.byType(ElevatedButton));
-    await tester.pump(); // Rebuild the widget after the state has changed.
+    await tester.pump(const Duration(milliseconds: 950));
+    await tester.pumpAndSettle();
 
-    // Verify that the task is displayed in the ListView.
-    expect(find.text('New Task'), findsOneWidget);
+    expect(find.text('Dashboard'), findsOneWidget);
   });
 }
