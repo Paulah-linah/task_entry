@@ -22,12 +22,6 @@ class TaskEntryApp extends StatelessWidget {
         appBarTheme: const AppBarTheme(
           centerTitle: true,
         ),
-        cardTheme: CardTheme(
-          elevation: 1,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           border: OutlineInputBorder(

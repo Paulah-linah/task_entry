@@ -12,6 +12,9 @@ export PATH="$PWD/flutter/bin:$PATH"
 
 flutter --version
 
+echo "Enabling Flutter web..."
+flutter config --enable-web
+
 echo "Fetching dependencies..."
 flutter pub get
 
