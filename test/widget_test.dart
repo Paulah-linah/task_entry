@@ -1,16 +1,25 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_entry_app/src/app/app.dart';
+import 'package:task_entry_app/src/features/auth/presentation/auth_controller.dart';
 
 void main() {
-  testWidgets('App shows splash then dashboard', (WidgetTester tester) async {
-    await tester.pumpWidget(const ProviderScope(child: TaskEntryAppShell()));
+  testWidgets('Logged-out user sees login screen', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
 
-    expect(find.text('TaskEntry'), findsOneWidget);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPrefsProvider.overrideWithValue(prefs),
+        ],
+        child: const TaskEntryAppShell(),
+      ),
+    );
 
-    await tester.pump(const Duration(milliseconds: 950));
     await tester.pumpAndSettle();
 
-    expect(find.text('Dashboard'), findsOneWidget);
+    expect(find.text('Welcome back'), findsOneWidget);
   });
 }

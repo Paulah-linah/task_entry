@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -24,11 +23,6 @@ class _SplashPageState extends State<SplashPage> {
         _opacity = 1;
         _scale = 1;
       });
-    });
-
-    Timer(const Duration(milliseconds: 900), () {
-      if (!mounted) return;
-      context.go('/dashboard');
     });
   }
 
